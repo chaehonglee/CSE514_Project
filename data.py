@@ -10,8 +10,8 @@ import tensorflow as tf
 class Dataset:
     def __init__(self,
                  batch_size,
-                 imstr='/path_to_image/%s',
-                 gtstr='/path_to_ground_truth/%s'):
+                 imstr='/jpeg/%s',
+                 gtstr='/segmentation_label/%s'):
 
         self.batch_size = batch_size
         self.imstr = imstr
@@ -60,8 +60,6 @@ class Dataset:
 
             gt = tf.image.decode_png(tf.read_file(ground_truth[i]), dtype=tf.uint16, channels=1)
             gt = tf.cast(gt, tf.float32)
-            gt = tf.divide(tf.add(gt, tf.constant(-2 ** 15, dtype=tf.float32)), tf.constant(64, dtype=tf.float32))
-            gt = tf.reshape(gt, [tf.shape(im)[0], tf.shape(im)[1], 2])
             _ground_truth.append(gt)
 
         return _img, _ground_truth
@@ -70,6 +68,7 @@ class Dataset:
     def _augment(img, ground_truth):
         """
         Helper for applying augmentation on an (image, label) pair
+        TODO: crop images into a fixed dimension (preferably a square)
         """
         for i in range(len(img)):
             im = tf.image.random_brightness(img, max_delta=0.2)
@@ -81,6 +80,7 @@ class Dataset:
             isflip = tf.random_uniform((), 0, 2, dtype=tf.int32)
             concat = tf.cond(isflip > 1, lambda: tf.image.random_flip_left_right(concat), lambda: concat)
 
+            # FIXME: dimension
             yc = tf.random_uniform((), 0, tf.shape(img[i])[0] - 320 + 1, dtype=tf.int32)
             xc = tf.random_uniform((), 0, tf.shape(img[i])[1] - 1024 + 1, dtype=tf.int32)
             concat = tf.slice(concat, tf.stack([yc, xc, 0]), tf.stack([320, 1024, tf.shape(concat)[-1]]))

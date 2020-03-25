@@ -89,12 +89,12 @@ class Net:
         self.L1 = tf.reduce_mean(tf.abs(gt - self.prediction))
 
         # Save image
-        saveim = self.prediction * tf.constant(64., tf.float32) + tf.constant(2. ** 15, tf.float32)
-        saveim = tf.maximum(tf.minimum(saveim, tf.constant(2 ** 16 - 1, dtype=tf.float32)), tf.constant(0., tf.float32))
-        saveim = tf.split(saveim, [1, 1, 1, 1], axis=0)
-        saveim = tf.concat([saveim[0], saveim[1], saveim[2]], axis=1)
-        saveim = tf.reshape(tf.cast(saveim, tf.uint16), [saveim.get_shape()[1] * 2, saveim.get_shape()[2], 1])
-        self.image = tf.image.encode_png(saveim)
+        # saveim = self.prediction * tf.constant(64., tf.float32) + tf.constant(2. ** 15, tf.float32)
+        # saveim = tf.maximum(tf.minimum(saveim, tf.constant(2 ** 16 - 1, dtype=tf.float32)), tf.constant(0., tf.float32))
+        # saveim = tf.split(saveim, [1, 1, 1, 1], axis=0)
+        # saveim = tf.concat([saveim[0], saveim[1], saveim[2]], axis=1)
+        # saveim = tf.reshape(tf.cast(saveim, tf.uint16), [saveim.get_shape()[1] * 2, saveim.get_shape()[2], 1])
+        # self.image = tf.image.encode_png(saveim)
 
         return self.prediction
 

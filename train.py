@@ -12,7 +12,6 @@ import utils as ut
 from model import Net
 from data import Dataset
 
-DATA = ''
 LEARNING_RATE = 1e-3
 BATCH_SIZE = 4
 MAXITER = 500e3
@@ -25,7 +24,7 @@ SAVEIMAGE = 1e4
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 # Load saver
-saver = ut.ckpter('wts/model*.npz')
+saver = ut.ckpter('wts/wts*.npz')
 if saver.iter >= MAXITER:
     MAXITER = 550e3
     LEARNING_RATE = 1e-5
@@ -50,8 +49,8 @@ sess = tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=4))
 sess.run(tf.global_variables_initializer())
 
 # Load data file names
-train_img = [f.rstrip('\n') for f in open('../data/' + DATA + '.txt').readlines()]
-val_list = [f.rstrip('\n') for f in open('../data/' + DATA + '.txt').readlines()]
+train_img = [f.rstrip('\n') for f in open('../data/train.txt').readlines()]
+val_list = [f.rstrip('\n') for f in open('../data/val.txt').readlines()]
 ESIZE = len(train_img) // BATCH_SIZE
 VESIZE = len(val_list) // BATCH_SIZE
 
@@ -83,7 +82,7 @@ while niter < MAXITER + 1:
                 vouts = vouts + np.float32(outs)
 
         if niter % SAVEIMAGE == 0:
-            # code for saving progress images
+            # TODO: code for saving progress images
             pass
 
         vouts = vouts / np.float32(VESIZE * VALREP)
