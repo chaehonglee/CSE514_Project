@@ -9,8 +9,8 @@ from keras.models import Model
 from tensorflow.keras.optimizers import Adam, SGD, Nadam
 import numpy as np
 
-def generate_u_net(num_classes = 2, input_size = (572, 572, 3),\
-                   optimizer="adam", lr = 1e-3):
+def generate_u_net(num_classes = 20, input_size = (572, 572, 3),\
+                   optimizer="adam", learning_rate = 1e-3):
     
     #check if a valid optimizer is passed in
     assert optimizer.lower() in ["adam", "sgd", "nadam"]
@@ -104,13 +104,13 @@ def generate_u_net(num_classes = 2, input_size = (572, 572, 3),\
     
     #apply the optimizer and loss function
     if (optimizer.lower()=="adam"):
-        uNet_model.compile(optimizer=Adam(learning_rate=lr),\
+        uNet_model.compile(optimizer=Adam(learning_rate=learning_rate),\
                        loss="categorical_crossentropy")
     elif(optimizer.lower()=="sgd"):
-        uNet_model.compile(optimizer=SGD(learning_rate=lr),\
+        uNet_model.compile(optimizer=SGD(learning_rate=learning_rate),\
                        loss="categorical_crossentropy")
     else:
-        uNet_model.compile(optimizer=Nadam(learning_rate=lr),\
+        uNet_model.compile(optimizer=Nadam(learning_rate=learning_rate),\
                        loss="categorical_crossentropy")
             
     return uNet_model

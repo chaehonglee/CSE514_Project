@@ -5,7 +5,8 @@ And https://github.com/zhixuhao/unet as a guide on how to use the ImageDataGener
 """
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-def train_model(model, training_directory, validation_directory):
+def train_model(model, training_directory, validation_directory,\
+                epochs=10, steps_per_epoch=1000, validation_steps=100):
     
     #get the inputshape of the model
     input_shape = model.layers[0].input_shape
@@ -53,9 +54,9 @@ def train_model(model, training_directory, validation_directory):
     
     model.fit_generator(
         train_datagen,
-        steps_per_epoch=1000,
-        epochs=10,
-        validation_data=val_datagen,
+        steps_per_epoch=steps_per_epoch,
+        epochs=epochs,
+        validation_data=validation_steps,
         validation_steps=100)
     
     return model
