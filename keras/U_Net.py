@@ -9,7 +9,7 @@ from keras.models import Model
 from tensorflow.keras.optimizers import Adam, SGD, Nadam
 import numpy as np
 
-def generate_u_net(num_classes = 2, input_size = (572, 572, 1),\
+def generate_u_net(num_classes = 2, input_size = (572, 572, 3),\
                    optimizer="adam", lr = 1e-3):
     
     #check if a valid optimizer is passed in
@@ -95,7 +95,8 @@ def generate_u_net(num_classes = 2, input_size = (572, 572, 1),\
                      activation='relu')(cat_4)
     conv_o2 = Conv2D(filters=64, kernel_size=(3,3), strides=(1,1),\
                      activation='relu')(conv_o1)
-    conv_output = Conv2D(filters=num_classes, kernel_size=(1,1), strides=(1,1))(conv_o2)
+    conv_output = Conv2D(filters=num_classes, kernel_size=(1,1), strides=(1,1),\
+                         activation='sigmoid')(conv_o2)
     
     #--------------------- Finalize the Model ---------------------#
 
