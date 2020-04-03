@@ -1,7 +1,7 @@
 """
 Trains a given model on training and testing set directories
 Uses https://keras.io/preprocessing/image/ as a documentation guide
-And https://github.com/zhixuhao/unet as a guide on how to use the ImageDataGenerator for UNET
+And https://github.com/zhixuhao/unet/blob/master/data.py as a guide on how to use the ImageDataGenerator for UNET
 """
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 

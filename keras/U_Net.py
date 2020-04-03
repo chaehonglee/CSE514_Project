@@ -5,7 +5,7 @@ Uses https://keras.io/getting-started/functional-api-guide/ as a documentation g
 
 from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Conv2DTranspose,\
     concatenate
-from keras.models import Model
+from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam, SGD, Nadam
 import numpy as np
 
