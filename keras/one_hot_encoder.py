@@ -53,6 +53,19 @@ label_decoding = {
     20:'tvmonitor',
     }
 
+def encode_image_batch(raw_image_batch, rgb_encoding=rgb_encoding):
+    """
+    Encodes a batch of raw rgb images using the specified color encodings
+        Parameters:
+        raw_image_batch : (batch_size, X,Y,3) sized numpy array
+        rgb_encoding : dictionary mapping integers to RGB values
+    Returns:
+        (batch_size, X,Y,Classes) sized encoded numpy array
+    """
+    return np.asarray([encode_image(single_image) for single_image in raw_image_batch])
+
+
+
 #Referencing: https://github.com/advaitsave/Multiclass-Semantic-Segmentation-CamVid/blob/master/Multiclass%20Semantic%20Segmentation%20using%20U-Net.ipynb
 def encode_image(raw_image, rgb_encoding=rgb_encoding):
     """
@@ -63,7 +76,6 @@ def encode_image(raw_image, rgb_encoding=rgb_encoding):
     Returns:
         (X,Y,Classes) sized encoded numpy array
     """
-    
     #define the dimensions of the encoded image
     width, height, depth = raw_image.shape
     num_classes = len(rgb_encoding)

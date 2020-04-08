@@ -6,14 +6,14 @@ https://github.com/advaitsave/Multiclass-Semantic-Segmentation-CamVid/blob/maste
 as a guide on how to use the ImageDataGenerator for UNET
 """
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from one_hot_encoder import encode_image
-import numpy as np
+from one_hot_encoder import encode_image, encode_image_batch
+import numpy as np 
 
 def train_model(model, training_directory, validation_directory,\
-                epochs=10, steps_per_epoch=1000, validation_steps=100):
+                epochs=10, steps_per_epoch=1000, validation_steps=100, batch_size = 16):
     
     #get the inputshape of the model
-    input_shape = model.layers[0].input_shape
+    input_shape = model.layers[0].input_shape[0][1:-1]
     
     #--------------------- Image Preprocessing ---------------------#
     
@@ -32,51 +32,49 @@ def train_model(model, training_directory, validation_directory,\
     val_mask_generator = ImageDataGenerator(rescale=1./255);
     
     #apply data augmentation for training dataset and validation dataset
-    train_image_datagen = train_image_generator.flow_from_directory(
-        training_directory,
-        target_size=input_shape,
-        classes=["images"],
-        class_mode=None,
-        seed=0)
-    train_mask_datagen = train_mask_generator.flow_from_directory(
-        training_directory,
-        target_size=input_shape,
-        classes=["masks"],
-        class_mode=None,
-        seed=0)
-    val_image_datagen = val_image_generator.flow_from_directory(
-        validation_directory,
-        target_size=input_shape,
-        classes=["images"],
-        class_mode=None,
-        seed=0)
-    val_mask_datagen = val_mask_generator.flow_from_directory(
-        validation_directory,
-        target_size=input_shape,
-        classes=["masks"],
-        class_mode=None,
-        seed=0)
-    
-    #one hot encode the training masks and condense the training data
-    train_mask_encoded_datgen = np.asarray([encode_image(mask) for mask in train_mask_datagen])
-    train_datagen = zip(train_image_datagen, train_mask_encoded_datgen)
-    
-    #one hot encode the validation masks and condense the validation data
-    val_mask_encoded_datagen = np.asarray([encode_image(mask) for mask in val_mask_datagen])
-    val_datagen = zip(val_image_datagen, val_mask_encoded_datagen)
+    training_set = create_augmentation_generator\
+        (train_image_generator, train_mask_generator, training_directory, input_shape, batch_size=batch_size)
+    validation_set = create_augmentation_generator\
+        (val_image_generator, val_mask_generator, validation_directory, input_shape, batch_size=batch_size)
     
     
     #--------------------- Begin Training ---------------------#
     
     model.fit_generator(
-        train_datagen,
+        training_set,
         steps_per_epoch=steps_per_epoch,
         epochs=epochs,
-        validation_data=val_datagen,
+        validation_data=validation_set,
         validation_steps=validation_steps)
     
     return model
     
+
+#referencing https://github.com/advaitsave/Multiclass-Semantic-Segmentation-CamVid/blob/master/Multiclass%20Semantic%20Segmentation%20using%20U-Net.ipynb
+def create_augmentation_generator(image_generator, mask_generator, directory, 
+                                  input_shape, batch_size):
+    #data generators
+    image_datagen = image_generator.flow_from_directory(
+        directory,
+        target_size=input_shape,
+        batch_size = batch_size,
+        classes=["images"],
+        class_mode=None,
+        seed=0)
+    mask_datagen = mask_generator.flow_from_directory(
+        directory,
+        target_size=input_shape,
+        batch_size = batch_size,
+        classes=["masks"],
+        class_mode=None,
+        seed=0)
+    
+    while True:
+        image = image_datagen.next()
+        mask = mask_datagen.next()
+        
+        #perform one hot encoding and yield
+        yield image, np.asarray(encode_image_batch(mask))
     
     
     
