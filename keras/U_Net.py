@@ -1,13 +1,21 @@
 """
 Creates the U-Net Architecture, based off of Ronnenberger et. al 2015
-Uses https://keras.io/getting-started/functional-api-guide/ as a documentation guide
+Uses https://keras.io/getting-started/functional-api-guide/ and 
+https://keras.io/layers/convolutional/ as documentation guides
 """
 
 from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Conv2DTranspose,\
-    concatenate
+    concatenate, Cropping2D
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam, SGD, Nadam
 import numpy as np
+from math import ceil
+
+def crop_layer_to_match(cropped_layer, layer2):
+    dh = ceil(abs(cropped_layer.shape[1] - layer2.shape[1])/2)
+    dw = ceil(abs(cropped_layer.shape[2] - layer2.shape[2])/2)
+    return Cropping2D(cropping=(dh,dw))(cropped_layer)
+
 
 def generate_u_net(num_classes = 20, input_size = (572, 572, 3),\
                    optimizer="adam", learning_rate = 1e-3):
@@ -55,40 +63,44 @@ def generate_u_net(num_classes = 20, input_size = (572, 572, 3),\
                      activation='relu')(pool_4)
     conv_e12 = Conv2D(filters=1024, kernel_size=(3,3), strides=(1,1),\
                      activation='relu')(conv_e11)
-    convT_1 = Conv2DTranspose(filters=512, kernel_size=(2,2), strides=(1,1))(conv_e12)
+    convT_1 = Conv2DTranspose(filters=512, kernel_size=(2,2), strides=(2,2))(conv_e12)
     
     #copy and crop conv_c42 to convT_1
-    cat_1 = concatenate([conv_c42, convT_1])
+    crop_conv_c42 = crop_layer_to_match(conv_c42, convT_1)
+    cat_1 = concatenate([crop_conv_c42, convT_1])
     
     #Second set of 3x3 Conv, Relu, 2x2 ConvTranspose
     conv_e21 = Conv2D(filters=512, kernel_size=(3,3), strides=(1,1),\
                      activation='relu')(cat_1)
     conv_e22 = Conv2D(filters=512, kernel_size=(3,3), strides=(1,1),\
                      activation='relu')(conv_e21)
-    convT_2 = Conv2DTranspose(filters=256, kernel_size=(2,2), strides=(1,1))(conv_e22)
+    convT_2 = Conv2DTranspose(filters=256, kernel_size=(2,2), strides=(2,2))(conv_e22)
     
     #copy and crop conv_c32 to convT_2
-    cat_2 = concatenate([conv_c32, convT_2])
+    crop_conv_c32 = crop_layer_to_match(conv_c32, convT_2)
+    cat_2 = concatenate([crop_conv_c32, convT_2])
     
     #Third set of 3x3 Conv, Relu, 2x2 ConvTranspose
     conv_e31 = Conv2D(filters=256, kernel_size=(3,3), strides=(1,1),\
                      activation='relu')(cat_2)
     conv_e32 = Conv2D(filters=256, kernel_size=(3,3), strides=(1,1),\
                      activation='relu')(conv_e31)
-    convT_3 = Conv2DTranspose(filters=128, kernel_size=(2,2), strides=(1,1))(conv_e32)
+    convT_3 = Conv2DTranspose(filters=128, kernel_size=(2,2), strides=(2,2))(conv_e32)
     
     #copy and crop conv_c22 to convT_3
-    cat_3 = concatenate([conv_c22, convT_3])
+    crop_conv_c22 = crop_layer_to_match(conv_c22, convT_3)
+    cat_3 = concatenate([crop_conv_c22, convT_3])
     
     #Fourth set of 3x3 Conv, Relu, 2x2 ConvTranspose
     conv_e41 = Conv2D(filters=128, kernel_size=(3,3), strides=(1,1),\
                      activation='relu')(cat_3)
     conv_e42 = Conv2D(filters=128, kernel_size=(3,3), strides=(1,1),\
                      activation='relu')(conv_e41)
-    convT_4 = Conv2DTranspose(filters=64, kernel_size=(2,2), strides=(1,1))(conv_e42)
+    convT_4 = Conv2DTranspose(filters=64, kernel_size=(2,2), strides=(2,2))(conv_e42)
     
     #copy and crop conv_c12 to convT_4
-    cat_4 = concatenate([conv_c12, convT_4])
+    crop_conv_c12 = crop_layer_to_match(conv_c12, convT_4)
+    cat_4 = concatenate([crop_conv_c12, convT_4])
     
     #3x3 Conv and then 1x1 Conv to output
     conv_o1 = Conv2D(filters=64, kernel_size=(3,3), strides=(1,1),\
