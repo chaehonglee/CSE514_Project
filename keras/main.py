@@ -16,7 +16,7 @@ needs_dataset_generation = True
 
 #model and training parameters
 num_classes = 20
-input_size = (572, 572, 3)
+input_size = (512, 512, 3)
 optimizer = "adam"
 learning_rate = 1e-3
 epochs = 5
