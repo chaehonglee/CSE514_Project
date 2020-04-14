@@ -40,14 +40,14 @@ def train_model(model, training_directory, validation_directory,\
     
     #--------------------- Begin Training ---------------------#
     
-    model.fit_generator(
+    history = model.fit_generator(
         training_set,
         steps_per_epoch=steps_per_epoch,
         epochs=epochs,
         validation_data=validation_set,
         validation_steps=validation_steps)
     
-    return model
+    return model, history
     
 
 #referencing https://github.com/advaitsave/Multiclass-Semantic-Segmentation-CamVid/blob/master/Multiclass%20Semantic%20Segmentation%20using%20U-Net.ipynb
