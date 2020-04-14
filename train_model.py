@@ -9,7 +9,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from one_hot_encoder import encode_image_batch
 import numpy as np 
 
-def train_model(model, training_directory, validation_directory,\
+def train_model(model, training_directory, validation_directory, rgb_encoding,
                 epochs=10, steps_per_epoch=1000, validation_steps=100, batch_size = 16):
     
     #get the inputshape of the model
@@ -33,9 +33,9 @@ def train_model(model, training_directory, validation_directory,\
     
     #apply data augmentation for training dataset and validation dataset
     training_set = create_augmentation_generator\
-        (train_image_generator, train_mask_generator, training_directory, input_shape, batch_size=batch_size)
+        (train_image_generator, train_mask_generator, training_directory, input_shape, batch_size, rgb_encoding)
     validation_set = create_augmentation_generator\
-        (val_image_generator, val_mask_generator, validation_directory, input_shape, batch_size=batch_size)
+        (val_image_generator, val_mask_generator, validation_directory, input_shape, batch_size, rgb_encoding)
     
     
     #--------------------- Begin Training ---------------------#
@@ -52,7 +52,7 @@ def train_model(model, training_directory, validation_directory,\
 
 #referencing https://github.com/advaitsave/Multiclass-Semantic-Segmentation-CamVid/blob/master/Multiclass%20Semantic%20Segmentation%20using%20U-Net.ipynb
 def create_augmentation_generator(image_generator, mask_generator, directory, 
-                                  input_shape, batch_size):
+                                  input_shape, batch_size, rgb_encoding):
     #data generators
     image_datagen = image_generator.flow_from_directory(
         directory,
@@ -74,6 +74,6 @@ def create_augmentation_generator(image_generator, mask_generator, directory,
         mask = mask_datagen.next()
         
         #perform one hot encoding and yield
-        yield image, np.asarray(encode_image_batch(mask))
+        yield image, np.asarray(encode_image_batch(mask, rgb_encoding))
     
     
