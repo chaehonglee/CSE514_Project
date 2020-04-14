@@ -75,8 +75,9 @@ plt.show()
 from predict_image import predict_image
 from one_hot_encoder import decode_encoded_batch
 import cv2
+import matplotlib.pyplot as plt
 test_img = cv2.imread(testing_directory+'\\images\\2007_002132.jpg')
 test_img = np.reshape(cv2.resize(test_img, input_size[:2]), [1] + list(input_size))
 prediction = unet.predict(test_img)
-pred_img = decode_encoded_batch(prediction)
-cv2.imshow('image', pred_img)
+pred_img = decode_encoded_batch(prediction)[0]
+plt.imshow(pred_img)

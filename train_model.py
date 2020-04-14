@@ -6,7 +6,7 @@ https://github.com/advaitsave/Multiclass-Semantic-Segmentation-CamVid/blob/maste
 as a guide on how to use the ImageDataGenerator for UNET
 """
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from one_hot_encoder import encode_image, encode_image_batch
+from one_hot_encoder import encode_image_batch
 import numpy as np 
 
 def train_model(model, training_directory, validation_directory,\
@@ -75,6 +75,5 @@ def create_augmentation_generator(image_generator, mask_generator, directory,
         
         #perform one hot encoding and yield
         yield image, np.asarray(encode_image_batch(mask))
-    
     
     
