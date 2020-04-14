@@ -95,6 +95,24 @@ def encode_image(raw_image, rgb_encoding=rgb_encoding):
         
     return encoded_image
 
+
+
+def decode_encoded_batch(encoded_batch, rgb_encoding=rgb_encoding):
+    """
+    Decodes a batch of encoded images
+
+    Parameters
+    ----------
+    encoded_batch : (batch_size, X,Y,Classes) sized encoded numpy array
+    rgb_encoding : dictionary mapping integers to RGB values
+
+    Returns:
+        (batch_size, X,Y,3) sized numpy array
+    """
+    return np.asarray([decode_encoded_image(single_encoding) for single_encoding in encoded_batch])
+
+
+
 #Referencing: https://github.com/advaitsave/Multiclass-Semantic-Segmentation-CamVid/blob/master/Multiclass%20Semantic%20Segmentation%20using%20U-Net.ipynb
 def decode_encoded_image(encoded_image, rgb_encoding=rgb_encoding):
     """
