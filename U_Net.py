@@ -11,7 +11,7 @@ from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Conv2DTranspose
     concatenate, Cropping2D, BatchNormalization, Dropout
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam, SGD, Nadam
-import numpy as np
+import tensorflow as tf
 from math import ceil
 
 def crop_layer_to_match(cropped_layer, layer2):
@@ -146,16 +146,27 @@ def generate_u_net(num_classes = 20, input_size = (512, 512, 3),\
     #--------------------- Finalize the Model ---------------------#
 
     uNet_model = Model(inputs=input_layer, outputs=conv_output)
+    metrics = [dice_loss, 'accuracy']
     
     #apply the optimizer and loss function
     if (optimizer.lower()=="adam"):
         uNet_model.compile(optimizer=Adam(learning_rate=learning_rate),\
-                       loss="categorical_crossentropy", metrics=['accuracy'])
+                       loss="categorical_crossentropy", metrics=metrics)
     elif(optimizer.lower()=="sgd"):
         uNet_model.compile(optimizer=SGD(learning_rate=learning_rate),\
-                       loss="categorical_crossentropy", metrics=['accuracy'])
+                       loss="categorical_crossentropy", metrics=metrics)
     else:
         uNet_model.compile(optimizer=Nadam(learning_rate=learning_rate),\
-                       loss="categorical_crossentropy", metrics=['accuracy'])
+                       loss="categorical_crossentropy", metrics=metrics)
             
     return uNet_model
+
+
+
+#The dice loss function
+#Referencing and taken from: https://lars76.github.io/neural-networks/object-detection/losses-for-segmentation/
+def dice_loss(y_true, y_pred):
+  numerator = 2 * tf.reduce_sum(y_true * y_pred, axis=-1)
+  denominator = tf.reduce_sum(y_true + y_pred, axis=-1)
+
+  return 1 - (numerator + 1) / (denominator + 1)
