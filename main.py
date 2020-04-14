@@ -20,7 +20,7 @@ testing_directory = root_data_dir+ r'\Testing'
 needs_dataset_generation = False
 
 #model and training parameters
-num_classes = 20
+num_classes = 21
 input_size = (512, 512, 3)
 optimizer = "adam"
 learning_rate = 1e-3
@@ -33,97 +33,51 @@ dropout = 0.25
 #define colomaps for pascal voc 2012
 #colormaps taken from Pascal Voc 2012 development kit code from http://host.robots.ox.ac.uk/pascal/VOC/voc2012/
 #onehot encoding referenced from https://github.com/advaitsave/Multiclass-Semantic-Segmentation-CamVid/blob/master/Multiclass%20Semantic%20Segmentation%20using%20U-Net.ipynb
-# =============================================================================
-# rgb_encoding = {
-#     0:(0,       0,      0),
-#     1:(0.502,   0,      0),
-#     2:(0,       0.502,  0),
-#     3:(0.502,   0.502,  0),
-#     4:(0,       0,      0.502),
-#     5:(0.502,   0,      0.502),
-#     6:(0,       0.502,  0.502),
-#     7:(0.502,   0.502,  0.502),
-#     8:(0.251,   0,      0),
-#     9:(0.7529,  0,      0),
-#     10:(0.251,  0.502,  0),
-#     11:(0.7529, 0.502,  0),
-#     12:(0.251,  0,      0.502),
-#     13:(0.7529, 0,      0.502),
-#     14:(0.251,  0.502,  0.502),
-#     15:(0.7529, 0.502,  0.502),
-#     16:(0,      0.251,  0),
-#     17:(0.502,  0.251,  0),
-#     18:(0,      0.7529, 0),
-#     19:(0.502,  0.7529, 0),
-#     20:(0,      0.251,  0.502),
-#     }
-# label_decoding = {
-#     0:'background',
-#     1:'aeroplane',
-#     2:'bicycle',
-#     3:'bird',
-#     4:'boat',
-#     5:'bottle',
-#     6:'bus',
-#     7:'car',
-#     8:'cat',
-#     9:'chair',
-#     10:'cow',
-#     11:'diningtable',
-#     12:'dog',
-#     13:'horse',
-#     14:'motorbike',
-#     15:'person',
-#     16:'pottedplant',
-#     17:'sheep',
-#     18:'sofa',
-#     19:'train',
-#     20:'tvmonitor',
-#     }
-# =============================================================================
 rgb_encoding = {
-    0:(0.502,   0,      0),
-    1:(0,       0.502,  0),
-    2:(0.502,   0.502,  0),
-    3:(0,       0,      0.502),
-    4:(0.502,   0,      0.502),
-    5:(0,       0.502,  0.502),
-    6:(0.502,   0.502,  0.502),
-    7:(0.251,   0,      0),
-    8:(0.7529,  0,      0),
-    9:(0.251,  0.502,  0),
-    10:(0.7529, 0.502,  0),
-    11:(0.251,  0,      0.502),
-    12:(0.7529, 0,      0.502),
-    13:(0.251,  0.502,  0.502),
-    14:(0.7529, 0.502,  0.502),
-    15:(0,      0.251,  0),
-    16:(0.502,  0.251,  0),
-    17:(0,      0.7529, 0),
-    18:(0.502,  0.7529, 0),
-    19:(0,      0.251,  0.502),
+    0:(0,       0,      0),
+    1:(0.502,   0,      0),
+    2:(0,       0.502,  0),
+    3:(0.502,   0.502,  0),
+    4:(0,       0,      0.502),
+    5:(0.502,   0,      0.502),
+    6:(0,       0.502,  0.502),
+    7:(0.502,   0.502,  0.502),
+    8:(0.251,   0,      0),
+    9:(0.7529,  0,      0),
+    10:(0.251,  0.502,  0),
+    11:(0.7529, 0.502,  0),
+    12:(0.251,  0,      0.502),
+    13:(0.7529, 0,      0.502),
+    14:(0.251,  0.502,  0.502),
+    15:(0.7529, 0.502,  0.502),
+    16:(0,      0.251,  0),
+    17:(0.502,  0.251,  0),
+    18:(0,      0.7529, 0),
+    19:(0.502,  0.7529, 0),
+    20:(0,      0.251,  0.502),
     }
 label_decoding = {
-    0:'aeroplane',
-    1:'bicycle',
-    2:'bird',
-    3:'boat',
-    4:'bottle',
-    5:'bus',
-    6:'car',
-    7:'cat',
-    8:'chair',
-    9:'cow',
-    10:'diningtable',
-    11:'dog',
-    12:'horse',
-    13:'motorbike',
-    14:'person',
-    15:'pottedplant',
-    16:'sheep',
-    17:'sofa',
-    18:'train',
-    19:'tvmonitor',
+    0:'background',
+    1:'aeroplane',
+    2:'bicycle',
+    3:'bird',
+    4:'boat',
+    5:'bottle',
+    6:'bus',
+    7:'car',
+    8:'cat',
+    9:'chair',
+    10:'cow',
+    11:'diningtable',
+    12:'dog',
+    13:'horse',
+    14:'motorbike',
+    15:'person',
+    16:'pottedplant',
+    17:'sheep',
+    18:'sofa',
+    19:'train',
+    20:'tvmonitor',
     }
 
 # =============================================================================
@@ -177,6 +131,15 @@ plt.xlabel('Epoch')
 plt.legend(['Train', 'Test'], loc='upper left')
 plt.show()
 
+#training and validation loss
+plt.plot(history.history['dice_loss'])
+plt.plot(history.history['val_dice_loss'])
+plt.title('Dice loss')
+plt.ylabel('Dice Loss')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Test'], loc='upper left')
+plt.show()
+
 #--------------------------- Single Image Testing ---------------------------#
 from predict_image import predict_image
 from one_hot_encoder import decode_encoded_batch
@@ -185,5 +148,5 @@ import matplotlib.pyplot as plt
 test_img = cv2.imread(testing_directory+'\\images\\2007_002132.jpg')
 test_img = np.reshape(cv2.resize(test_img, input_size[:2]), [1] + list(input_size))
 prediction = unet.predict(test_img)
-pred_img = decode_encoded_batch(prediction)[0]
+pred_img = decode_encoded_batch(prediction, rgb_encoding)[0]
 plt.imshow(pred_img)

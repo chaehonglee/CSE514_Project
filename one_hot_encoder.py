@@ -52,7 +52,7 @@ def encode_image(raw_image, rgb_encoding):
 
 
 
-def decode_encoded_batch(encoded_batch, rgb_encoding, background_encode = True):
+def decode_encoded_batch(encoded_batch, rgb_encoding):
     """
     Decodes a batch of encoded images
 
@@ -69,7 +69,7 @@ def decode_encoded_batch(encoded_batch, rgb_encoding, background_encode = True):
 
 
 #Referencing: https://github.com/advaitsave/Multiclass-Semantic-Segmentation-CamVid/blob/master/Multiclass%20Semantic%20Segmentation%20using%20U-Net.ipynb
-def decode_encoded_image(encoded_image, rgb_encoding, background_encode = True):
+def decode_encoded_image(encoded_image, rgb_encoding):
     """
     Decodes a given encoded image using the specified color decodings
     Parameters:
@@ -81,15 +81,6 @@ def decode_encoded_image(encoded_image, rgb_encoding, background_encode = True):
     """  
     #get the dimensions of the image
     width, height, _ = encoded_image.shape
-    
-    #check if the background needs to be encoded, and perform the encoding if necesssary
-    if background_encode:
-        rgb_encoding[len(rgb_encoding)] = (0,0,0)
-        background_identifier = np.max(encoded_image, axis=2)
-        background_identifier[background_identifier == 0] = 2
-        background_identifier[background_identifier != 2] = 0
-        background_identifier.reshape(width, height, 1)
-        encoded_image = np.dstack((encoded_image, background_identifier))
     
     #collapse the encoded image such that each pixelwise "pixel" denotes which integer label code it is
     collapsed_encoding = np.argmax(encoded_image, axis=2).flatten()
