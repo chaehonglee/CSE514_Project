@@ -31,40 +31,40 @@ def generate_u_net(num_classes = 21, input_size = (512, 512, 3),\
     
     #First set of 3x3 Conv, Relu and 2x2 max pool
     conv_c11 = Conv2D(filters=64, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(input_layer)
+                     activation='relu', padding='same', kernel_initializer='he_normal')(input_layer)
     conv_c11 = BatchNormalization()(conv_c11)
     conv_c12 = Conv2D(filters=64, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(conv_c11) 
+                     activation='relu', padding='same', kernel_initializer='he_normal')(conv_c11) 
     conv_c12 = BatchNormalization()(conv_c12)
     pool_1 = MaxPooling2D(pool_size=(2,2), strides=(2,2))(conv_c12)
     pool_1 = Dropout(dropout)(pool_1)
     
     #Second set of 3x3 Conv, Relu and 2x2 max pool
     conv_c21 = Conv2D(filters=128, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(pool_1)
+                     activation='relu', padding='same', kernel_initializer='he_normal')(pool_1)
     conv_c21 = BatchNormalization()(conv_c21)
     conv_c22 = Conv2D(filters=128, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(conv_c21) 
+                     activation='relu', padding='same', kernel_initializer='he_normal')(conv_c21) 
     conv_c22 = BatchNormalization()(conv_c22)
     pool_2 = MaxPooling2D(pool_size=(2,2), strides=(2,2))(conv_c22)
     pool_2 = Dropout(dropout)(pool_2)
     
     #Third set of 3x3 Conv, Relu and 2x max pool
     conv_c31 = Conv2D(filters=256, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(pool_2)
+                     activation='relu', padding='same', kernel_initializer='he_normal')(pool_2)
     conv_c31 = BatchNormalization()(conv_c31)
     conv_c32 = Conv2D(filters=256, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(conv_c31)
+                     activation='relu', padding='same', kernel_initializer='he_normal')(conv_c31)
     conv_c32 = BatchNormalization()(conv_c32)
     pool_3 = MaxPooling2D(pool_size=(2,2), strides=(2,2))(conv_c32)
     pool_3 = Dropout(dropout)(pool_3)
     
     #Fourth set of 3x3 Conv, Relu and 2x max pool
     conv_c41 = Conv2D(filters=512, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(pool_3)
+                     activation='relu', padding='same', kernel_initializer='he_normal')(pool_3)
     conv_c41 = BatchNormalization()(conv_c41)
     conv_c42 = Conv2D(filters=512, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(conv_c41)
+                     activation='relu', padding='same', kernel_initializer='he_normal')(conv_c41)
     conv_c42 = BatchNormalization()(conv_c42)
     pool_4 = MaxPooling2D(pool_size=(2,2), strides=(2,2))(conv_c42)
     pool_4 = Dropout(dropout)(pool_4)
@@ -73,10 +73,10 @@ def generate_u_net(num_classes = 21, input_size = (512, 512, 3),\
     
     #First set of 3x3 Conv, Relu, 2x2 ConvTranspose
     conv_e11 = Conv2D(filters=1024, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(pool_4)
+                     activation='relu', padding='same', kernel_initializer='he_normal')(pool_4)
     conv_e11 = BatchNormalization()(conv_e11)
     conv_e12 = Conv2D(filters=1024, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(conv_e11)
+                     activation='relu', padding='same', kernel_initializer='he_normal')(conv_e11)
     conv_e12 = BatchNormalization()(conv_e12)
     up_1 = UpSampling2D(size=(2,2))(conv_e12)
     
@@ -85,10 +85,10 @@ def generate_u_net(num_classes = 21, input_size = (512, 512, 3),\
     
     #Second set of 3x3 Conv, Relu, 2x2 ConvTranspose
     conv_e21 = Conv2D(filters=512, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(cat_1)
+                     activation='relu', padding='same', kernel_initializer='he_normal')(cat_1)
     conv_e21 = BatchNormalization()(conv_e21)
     conv_e22 = Conv2D(filters=512, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(conv_e21)
+                     activation='relu', padding='same', kernel_initializer='he_normal')(conv_e21)
     conv_e22 = BatchNormalization()(conv_e22)
     up_2 = UpSampling2D(size=(2,2))(conv_e22)
     
@@ -97,10 +97,10 @@ def generate_u_net(num_classes = 21, input_size = (512, 512, 3),\
     
     #Third set of 3x3 Conv, Relu, 2x2 ConvTranspose
     conv_e31 = Conv2D(filters=256, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(cat_2)
+                     activation='relu', padding='same', kernel_initializer='he_normal')(cat_2)
     conv_e31 = BatchNormalization()(conv_e31)
     conv_e32 = Conv2D(filters=256, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(conv_e31)
+                     activation='relu', padding='same', kernel_initializer='he_normal')(conv_e31)
     conv_e32 = BatchNormalization()(conv_e32)
     up_3 = UpSampling2D(size=(2,2))(conv_e32)
     
@@ -109,10 +109,10 @@ def generate_u_net(num_classes = 21, input_size = (512, 512, 3),\
     
     #Fourth set of 3x3 Conv, Relu, 2x2 ConvTranspose
     conv_e41 = Conv2D(filters=128, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(cat_3)
+                     activation='relu', padding='same', kernel_initializer='he_normal')(cat_3)
     conv_e41 = BatchNormalization()(conv_e41)
     conv_e42 = Conv2D(filters=128, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(conv_e41)
+                     activation='relu', padding='same', kernel_initializer='he_normal')(conv_e41)
     conv_e42 = BatchNormalization()(conv_e42)
     up_4 = UpSampling2D(size=(2,2))(conv_e42)
     
@@ -121,10 +121,10 @@ def generate_u_net(num_classes = 21, input_size = (512, 512, 3),\
     
     #3x3 Conv and then 1x1 Conv to output
     conv_o1 = Conv2D(filters=64, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(cat_4)
+                     activation='relu', padding='same', kernel_initializer='he_normal')(cat_4)
     conv_o1 = BatchNormalization()(conv_o1)
     conv_o2 = Conv2D(filters=64, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='zeros')(conv_o1)
+                     activation='relu', padding='same', kernel_initializer='he_normal')(conv_o1)
     conv_o2 = BatchNormalization()(conv_o2)
     conv_output = Conv2D(filters=num_classes, kernel_size=(1,1), strides=(1,1),\
                          activation='softmax')(conv_o2)
