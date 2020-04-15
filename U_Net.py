@@ -8,7 +8,7 @@ and https://github.com/zhixuhao/unet/blob/master/model.py as references for arch
 """
 
 from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Conv2DTranspose,\
-    concatenate, Cropping2D, BatchNormalization, Dropout
+    concatenate, Cropping2D, BatchNormalization, Dropout, UpSampling2D
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam, SGD, Nadam
 import tensorflow as tf
@@ -141,23 +141,23 @@ def generate_u_net(num_classes = 20, input_size = (512, 512, 3),\
                      activation='relu', padding='same')(conv_o1)
     conv_o2 = BatchNormalization()(conv_o2)
     conv_output = Conv2D(filters=num_classes, kernel_size=(1,1), strides=(1,1),\
-                         activation='sigmoid')(conv_o2)
+                         activation='softmax')(conv_o2)
     
     #--------------------- Finalize the Model ---------------------#
 
     uNet_model = Model(inputs=input_layer, outputs=conv_output)
-    metrics = [dice_loss, 'accuracy']
+    metrics = ['accuracy']
     
     #apply the optimizer and loss function
     if (optimizer.lower()=="adam"):
         uNet_model.compile(optimizer=Adam(learning_rate=learning_rate),\
-                       loss="categorical_crossentropy", metrics=metrics)
+                       loss=dice_loss, metrics=metrics)
     elif(optimizer.lower()=="sgd"):
         uNet_model.compile(optimizer=SGD(learning_rate=learning_rate),\
-                       loss="categorical_crossentropy", metrics=metrics)
+                       loss=dice_loss, metrics=metrics)
     else:
         uNet_model.compile(optimizer=Nadam(learning_rate=learning_rate),\
-                       loss="categorical_crossentropy", metrics=metrics)
+                       loss=dice_loss, metrics=metrics)
             
     return uNet_model
 
