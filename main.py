@@ -24,9 +24,9 @@ num_classes = 21
 input_size = (512, 512, 3)
 optimizer = "adam"
 learning_rate = 1e-3
-epochs = 50
-steps_per_epoch = 50
-validation_steps = 50
+epochs = 175
+steps_per_epoch = 200
+validation_steps = 100
 batch_size = 2
 dropout = 0.25
 
@@ -79,12 +79,11 @@ label_decoding = {
     19:'train',
     20:'tvmonitor',
     }
-
 # =============================================================================
-# import cv2
 # import matplotlib.pyplot as plt
+# import matplotlib.image as img
 # from one_hot_encoder import encode_image, decode_encoded_image
-# test_img = cv2.imread(testing_directory+'\\masks\\2007_002132.png')
+# test_img = img.imread(testing_directory+'\\masks\\2007_006212.png')
 # temp_encode = encode_image(test_img, rgb_encoding)
 # img_decode = decode_encoded_image(temp_encode, rgb_encoding)
 # =============================================================================
@@ -103,7 +102,7 @@ if needs_dataset_generation:
 
 #create a U_Net model
 unet = generate_u_net(num_classes=num_classes, input_size=input_size,
-                      optimizer="adam", learning_rate=1e-3, dropout=dropout)
+                      optimizer=optimizer, learning_rate=learning_rate, dropout=dropout)
 #train u-net
 unet, history = train_model(unet, training_directory, validation_directory, rgb_encoding,
                    epochs, steps_per_epoch, validation_steps, batch_size = batch_size)
@@ -114,10 +113,10 @@ unet, history = train_model(unet, training_directory, validation_directory, rgb_
 #https://keras.io/visualization/
 import matplotlib.pyplot as plt
 #training and validation accuracy
-plt.plot(history.history['accuracy'])
-plt.plot(history.history['val_accuracy'])
-plt.title('Model Accuracy')
-plt.ylabel("Accuracy")
+plt.plot(history.history['iou_coef'])
+plt.plot(history.history['val_iou_coef'])
+plt.title('Model IOU')
+plt.ylabel("IOU")
 plt.xlabel('Epoch')
 plt.legend(['Training', 'Validation'])
 plt.show()
@@ -131,22 +130,19 @@ plt.xlabel('Epoch')
 plt.legend(['Train', 'Test'], loc='upper left')
 plt.show()
 
-#training and validation loss
-plt.plot(history.history['dice_loss'])
-plt.plot(history.history['val_dice_loss'])
-plt.title('Dice loss')
-plt.ylabel('Dice Loss')
-plt.xlabel('Epoch')
-plt.legend(['Train', 'Test'], loc='upper left')
-plt.show()
-
 #--------------------------- Single Image Testing ---------------------------#
 from predict_image import predict_image
 from one_hot_encoder import decode_encoded_batch
 import cv2
 import matplotlib.pyplot as plt
-test_img = cv2.imread(testing_directory+'\\images\\2007_002132.jpg')
+import matplotlib.image as img
+test_img = img.imread(testing_directory+'\\images\\2009_005120.jpg')/255.
 test_img = np.reshape(cv2.resize(test_img, input_size[:2]), [1] + list(input_size))
 prediction = unet.predict(test_img)
 pred_img = decode_encoded_batch(prediction, rgb_encoding)[0]
 plt.imshow(pred_img)
+
+#------------------------------- Save info -------------------------------#
+import pickle
+with open('trainingHistory', 'wb') as f:
+        pickle.dump(history.history, f)

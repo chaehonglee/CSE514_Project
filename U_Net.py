@@ -8,6 +8,8 @@ and https://github.com/zhixuhao/unet/blob/master/model.py as references for arch
 
 Using https://stackoverflow.com/questions/45939446/how-to-build-a-multi-class-convolutional-neural-network-with-keras as reference
 for initializers that work
+
+Using https://www.kaggle.com/c/carvana-image-masking-challenge/discussion/40199 for idea of dilation
 """
 
 from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D,\
@@ -127,7 +129,7 @@ def generate_u_net(num_classes = 21, input_size = (512, 512, 3),\
                      activation='relu', padding='same', kernel_initializer='he_normal')(conv_o1)
     conv_o2 = BatchNormalization()(conv_o2)
     conv_output = Conv2D(filters=num_classes, kernel_size=(1,1), strides=(1,1),\
-                         activation='softmax')(conv_o2)
+                         activation='sigmoid')(conv_o2)
     
     #--------------------- Finalize the Model ---------------------#
 
@@ -137,13 +139,13 @@ def generate_u_net(num_classes = 21, input_size = (512, 512, 3),\
     #apply the optimizer and loss function
     if (optimizer.lower()=="adam"):
         uNet_model.compile(optimizer=Adam(learning_rate=learning_rate),\
-                       loss=dice_loss, metrics=metrics)
+                       loss=dice_coef_multilabel, metrics=metrics)
     elif(optimizer.lower()=="sgd"):
         uNet_model.compile(optimizer=SGD(learning_rate=learning_rate),\
-                       loss=dice_loss, metrics=metrics)
+                       loss=dice_coef_multilabel, metrics=metrics)
     else:
         uNet_model.compile(optimizer=Nadam(learning_rate=learning_rate),\
-                       loss=dice_loss, metrics=metrics)
+                       loss=dice_coef_multilabel, metrics=metrics)
             
     return uNet_model
 
@@ -151,14 +153,22 @@ def generate_u_net(num_classes = 21, input_size = (512, 512, 3),\
 
 #The dice loss function
 #Referencing: https://lars76.github.io/neural-networks/object-detection/losses-for-segmentation/
-#Code from: https://towardsdatascience.com/metrics-to-evaluate-your-semantic-segmentation-model-6bcb99639aa2
-def dice_coef(y_true, y_pred, smooth=1):
-    intersection = K.sum(y_true * y_pred, axis=[1,2,3])
-    union = K.sum(y_true, axis=[1,2,3]) + K.sum(y_pred, axis=[1,2,3])
-    return K.mean( (2. * intersection + smooth) / (union + smooth), axis=0)
+#Code from: gattia, https://github.com/keras-team/keras/issues/9395
+def dice_coef(y_true, y_pred, smooth = 1):
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
 
-def dice_loss(y_true, y_pred):
-    return 1.-dice_coef(y_true, y_pred)
+def dice_coef_multilabel(y_true, y_pred, numLabels=21):
+    dice=1
+    for index in range(numLabels):
+        dice -= (0.1 + 0.9 * (index != 0)) * dice_coef(y_true[:,:,:,index], y_pred[:,:,:,index])
+    return dice
+
+
+
+
 
 #The IOU accuracy metric
 #Code from: https://towardsdatascience.com/metrics-to-evaluate-your-semantic-segmentation-model-6bcb99639aa2
