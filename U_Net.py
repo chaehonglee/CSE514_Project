@@ -9,7 +9,7 @@ and https://github.com/zhixuhao/unet/blob/master/model.py as references for arch
 Using https://stackoverflow.com/questions/45939446/how-to-build-a-multi-class-convolutional-neural-network-with-keras as reference
 for initializers that work
 
-Using https://www.kaggle.com/c/carvana-image-masking-challenge/discussion/40199 for idea of dilation
+Using https://www.kaggle.com/c/carvana-image-masking-challenge/discussion/40199 and https://towardsdatascience.com/review-dilated-convolution-semantic-segmentation-9d5a5bd768f5for idea of dilation
 """
 
 from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D,\
@@ -21,7 +21,7 @@ import tensorflow.keras.backend as K
 
 
 def generate_u_net(num_classes = 21, input_size = (512, 512, 3),\
-                   optimizer="adam", learning_rate = 1e-3, dropout=0.25):
+                   optimizer="adam", learning_rate = 1e-3, dropout=0.25, dilation_rate=2):
     
     #check if a valid optimizer is passed in
     assert optimizer.lower() in ["adam", "sgd", "nadam"]
@@ -33,40 +33,40 @@ def generate_u_net(num_classes = 21, input_size = (512, 512, 3),\
     
     #First set of 3x3 Conv, Relu and 2x2 max pool
     conv_c11 = Conv2D(filters=64, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='he_normal')(input_layer)
+                     activation='relu', padding='same', kernel_initializer='he_normal', dilation_rate=dilation_rate**0)(input_layer)
     conv_c11 = BatchNormalization()(conv_c11)
     conv_c12 = Conv2D(filters=64, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='he_normal')(conv_c11) 
+                     activation='relu', padding='same', kernel_initializer='he_normal', dilation_rate=dilation_rate**0)(conv_c11) 
     conv_c12 = BatchNormalization()(conv_c12)
     pool_1 = MaxPooling2D(pool_size=(2,2), strides=(2,2))(conv_c12)
     pool_1 = Dropout(dropout)(pool_1)
     
     #Second set of 3x3 Conv, Relu and 2x2 max pool
     conv_c21 = Conv2D(filters=128, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='he_normal')(pool_1)
+                     activation='relu', padding='same', kernel_initializer='he_normal', dilation_rate=dilation_rate**0)(pool_1)
     conv_c21 = BatchNormalization()(conv_c21)
     conv_c22 = Conv2D(filters=128, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='he_normal')(conv_c21) 
+                     activation='relu', padding='same', kernel_initializer='he_normal', dilation_rate=dilation_rate**0)(conv_c21) 
     conv_c22 = BatchNormalization()(conv_c22)
     pool_2 = MaxPooling2D(pool_size=(2,2), strides=(2,2))(conv_c22)
     pool_2 = Dropout(dropout)(pool_2)
     
     #Third set of 3x3 Conv, Relu and 2x max pool
     conv_c31 = Conv2D(filters=256, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='he_normal')(pool_2)
+                     activation='relu', padding='same', kernel_initializer='he_normal', dilation_rate=dilation_rate**1)(pool_2)
     conv_c31 = BatchNormalization()(conv_c31)
     conv_c32 = Conv2D(filters=256, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='he_normal')(conv_c31)
+                     activation='relu', padding='same', kernel_initializer='he_normal', dilation_rate=dilation_rate**1)(conv_c31)
     conv_c32 = BatchNormalization()(conv_c32)
     pool_3 = MaxPooling2D(pool_size=(2,2), strides=(2,2))(conv_c32)
     pool_3 = Dropout(dropout)(pool_3)
     
     #Fourth set of 3x3 Conv, Relu and 2x max pool
     conv_c41 = Conv2D(filters=512, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='he_normal')(pool_3)
+                     activation='relu', padding='same', kernel_initializer='he_normal', dilation_rate=dilation_rate**2)(pool_3)
     conv_c41 = BatchNormalization()(conv_c41)
     conv_c42 = Conv2D(filters=512, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='he_normal')(conv_c41)
+                     activation='relu', padding='same', kernel_initializer='he_normal', dilation_rate=dilation_rate**2)(conv_c41)
     conv_c42 = BatchNormalization()(conv_c42)
     pool_4 = MaxPooling2D(pool_size=(2,2), strides=(2,2))(conv_c42)
     pool_4 = Dropout(dropout)(pool_4)
@@ -75,10 +75,10 @@ def generate_u_net(num_classes = 21, input_size = (512, 512, 3),\
     
     #First set of 3x3 Conv, Relu, 2x2 ConvTranspose
     conv_e11 = Conv2D(filters=1024, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='he_normal')(pool_4)
+                     activation='relu', padding='same', kernel_initializer='he_normal', dilation_rate=dilation_rate**3)(pool_4)
     conv_e11 = BatchNormalization()(conv_e11)
     conv_e12 = Conv2D(filters=1024, kernel_size=(3,3), strides=(1,1),\
-                     activation='relu', padding='same', kernel_initializer='he_normal')(conv_e11)
+                     activation='relu', padding='same', kernel_initializer='he_normal', dilation_rate=dilation_rate**3)(conv_e11)
     conv_e12 = BatchNormalization()(conv_e12)
     up_1 = UpSampling2D(size=(2,2))(conv_e12)
     

@@ -24,11 +24,12 @@ num_classes = 21
 input_size = (512, 512, 3)
 optimizer = "adam"
 learning_rate = 1e-3
-epochs = 175
+epochs = 60
 steps_per_epoch = 200
 validation_steps = 100
 batch_size = 2
 dropout = 0.25
+dilation_rate = 2
 
 #define colomaps for pascal voc 2012
 #colormaps taken from Pascal Voc 2012 development kit code from http://host.robots.ox.ac.uk/pascal/VOC/voc2012/
@@ -102,7 +103,7 @@ if needs_dataset_generation:
 
 #create a U_Net model
 unet = generate_u_net(num_classes=num_classes, input_size=input_size,
-                      optimizer=optimizer, learning_rate=learning_rate, dropout=dropout)
+                      optimizer=optimizer, learning_rate=learning_rate, dropout=dropout, dilation_rate=dilation_rate)
 #train u-net
 unet, history = train_model(unet, training_directory, validation_directory, rgb_encoding,
                    epochs, steps_per_epoch, validation_steps, batch_size = batch_size)
