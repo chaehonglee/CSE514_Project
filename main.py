@@ -24,10 +24,10 @@ num_classes = 21
 input_size = (512, 512, 3)
 optimizer = "adam"
 learning_rate = 1e-3
-epochs = 60
-steps_per_epoch = 200
+epochs = 30
+steps_per_epoch = 900
 validation_steps = 100
-batch_size = 2
+batch_size = 3
 dropout = 0.25
 dilation_rate = 2
 
@@ -137,7 +137,7 @@ from one_hot_encoder import decode_encoded_batch
 import cv2
 import matplotlib.pyplot as plt
 import matplotlib.image as img
-test_img = img.imread(testing_directory+'\\images\\2009_005120.jpg')/255.
+test_img = img.imread(validation_directory+'\\images\\2009_005120.jpg')/255.
 test_img = np.reshape(cv2.resize(test_img, input_size[:2]), [1] + list(input_size))
 prediction = unet.predict(test_img)
 pred_img = decode_encoded_batch(prediction, rgb_encoding)[0]
@@ -145,5 +145,7 @@ plt.imshow(pred_img)
 
 #------------------------------- Save info -------------------------------#
 import pickle
-with open('trainingHistory', 'wb') as f:
+with open('Training_1v2_History', 'wb') as f:
         pickle.dump(history.history, f)
+
+unet.save("Training_1v2_Model.h5")

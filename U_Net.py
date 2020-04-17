@@ -9,7 +9,7 @@ and https://github.com/zhixuhao/unet/blob/master/model.py as references for arch
 Using https://stackoverflow.com/questions/45939446/how-to-build-a-multi-class-convolutional-neural-network-with-keras as reference
 for initializers that work
 
-Using https://www.kaggle.com/c/carvana-image-masking-challenge/discussion/40199 and https://towardsdatascience.com/review-dilated-convolution-semantic-segmentation-9d5a5bd768f5for idea of dilation
+Using https://www.kaggle.com/c/carvana-image-masking-challenge/discussion/40199 and https://towardsdatascience.com/review-dilated-convolution-semantic-segmentation-9d5a5bd768f5 for idea of dilation
 """
 
 from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D,\
@@ -162,8 +162,15 @@ def dice_coef(y_true, y_pred, smooth = 1):
 
 def dice_coef_multilabel(y_true, y_pred, numLabels=21):
     dice=1
+    weight=1
     for index in range(numLabels):
-        dice -= (0.1 + 0.9 * (index != 0)) * dice_coef(y_true[:,:,:,index], y_pred[:,:,:,index])
+        if index==0:
+            weight = 0.1
+        elif index in [1, 6]:
+            weight = 0.6
+        elif index in [2, 8, 15, 20]:
+            weight = 0.8
+        dice -= weight * dice_coef(y_true[:,:,:,index], y_pred[:,:,:,index])
     return dice
 
 
