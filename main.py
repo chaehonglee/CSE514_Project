@@ -80,6 +80,9 @@ label_decoding = {
     19:'train',
     20:'tvmonitor',
     }
+
+from get_dice_weights import get_dice_weights
+dice_weights = get_dice_weights(training_directory+'\\masks', rgb_encoding)
 # =============================================================================
 # import matplotlib.pyplot as plt
 # import matplotlib.image as img

@@ -6,9 +6,6 @@ https://keras.io/layers/convolutional/ as documentation guides
 Using https://github.com/advaitsave/Multiclass-Semantic-Segmentation-CamVid/blob/master/Multiclass%20Semantic%20Segmentation%20using%20U-Net.ipynb
 and https://github.com/zhixuhao/unet/blob/master/model.py as references for architecture for dropout and batchnormalization
 
-Using https://stackoverflow.com/questions/45939446/how-to-build-a-multi-class-convolutional-neural-network-with-keras as reference
-for initializers that work
-
 Using https://www.kaggle.com/c/carvana-image-masking-challenge/discussion/40199 and https://towardsdatascience.com/review-dilated-convolution-semantic-segmentation-9d5a5bd768f5 for idea of dilation
 """
 
@@ -17,7 +14,7 @@ from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D,\
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam, SGD, Nadam
 import tensorflow.keras.backend as K
-
+import numpy as np
 
 
 def generate_u_net(num_classes = 21, input_size = (512, 512, 3),\
@@ -151,6 +148,13 @@ def generate_u_net(num_classes = 21, input_size = (512, 512, 3),\
 
 
 
+#calculated dice weights, using get_dice_weights and normalizing the value towards the maximum weight
+dice_weights = np.array([0.00382246, 0.3656896 , 1. , 0.32673692, 0.49402413,
+       0.42139708, 0.15820687, 0.18311312, 0.11451427, 0.27975702,
+       0.28035656, 0.23452706, 0.15204121, 0.28077487, 0.25447604,
+       0.0585353 , 0.51858259, 0.34374223, 0.19751901, 0.17568407,
+       0.36481013])
+
 #The dice loss function
 #Referencing: https://lars76.github.io/neural-networks/object-detection/losses-for-segmentation/
 #Code from: gattia, https://github.com/keras-team/keras/issues/9395
@@ -160,20 +164,11 @@ def dice_coef(y_true, y_pred, smooth = 1):
     intersection = K.sum(y_true_f * y_pred_f)
     return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
 
-def dice_coef_multilabel(y_true, y_pred, numLabels=21):
+def dice_coef_multilabel(y_true, y_pred, numLabels=21, dice_weights=dice_weights):
     dice=1
-    weight=1
     for index in range(numLabels):
-        if index==0:
-            weight = 0.1
-        elif index in [1, 6]:
-            weight = 0.6
-        elif index in [2, 8, 15, 20]:
-            weight = 0.8
-        dice -= weight * dice_coef(y_true[:,:,:,index], y_pred[:,:,:,index])
+        dice -= dice_weights[index] * dice_coef(y_true[:,:,:,index], y_pred[:,:,:,index])
     return dice
-
-
 
 
 
