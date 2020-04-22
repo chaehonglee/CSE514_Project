@@ -149,7 +149,7 @@ def generate_u_net(num_classes = 21, input_size = (512, 512, 3),\
 
 
 #calculated dice weights, using get_dice_weights and normalizing the value towards the maximum weight
-dice_weights = np.array([0.00382246, 0.3656896 , 1. , 0.32673692, 0.49402413,
+weights = np.array([0.00382246, 0.3656896 , 1. , 0.32673692, 0.49402413,
        0.42139708, 0.15820687, 0.18311312, 0.11451427, 0.27975702,
        0.28035656, 0.23452706, 0.15204121, 0.28077487, 0.25447604,
        0.0585353 , 0.51858259, 0.34374223, 0.19751901, 0.17568407,
@@ -164,7 +164,7 @@ def dice_coef(y_true, y_pred, smooth = 1):
     intersection = K.sum(y_true_f * y_pred_f)
     return (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
 
-def dice_coef_multilabel(y_true, y_pred, numLabels=21, dice_weights=dice_weights):
+def dice_coef_multilabel(y_true, y_pred, numLabels=21, dice_weights=weights):
     dice=1
     for index in range(numLabels):
         dice -= dice_weights[index] * dice_coef(y_true[:,:,:,index], y_pred[:,:,:,index])

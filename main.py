@@ -19,17 +19,21 @@ testing_directory = root_data_dir+ r'\Testing'
 #do we need to create the datasets inside the directories listed above?
 needs_dataset_generation = False
 
+#do we need to calculate dice weights?
+needs_dice_weights = False
+
 #model and training parameters
 num_classes = 21
 input_size = (512, 512, 3)
 optimizer = "adam"
-learning_rate = 1e-3
+learning_rate = 1e-2
 epochs = 30
-steps_per_epoch = 900
+steps_per_epoch = 1250
 validation_steps = 100
-batch_size = 3
+batch_size = 2
 dropout = 0.25
 dilation_rate = 2
+schedule='step'
 
 #define colomaps for pascal voc 2012
 #colormaps taken from Pascal Voc 2012 development kit code from http://host.robots.ox.ac.uk/pascal/VOC/voc2012/
@@ -81,8 +85,9 @@ label_decoding = {
     20:'tvmonitor',
     }
 
-from get_dice_weights import get_dice_weights
-dice_weights = get_dice_weights(training_directory+'\\masks', rgb_encoding)
+if needs_dice_weights:
+    from get_dice_weights import get_dice_weights
+    dice_weights = get_dice_weights(training_directory+'\\masks', rgb_encoding)
 # =============================================================================
 # import matplotlib.pyplot as plt
 # import matplotlib.image as img
@@ -109,7 +114,7 @@ unet = generate_u_net(num_classes=num_classes, input_size=input_size,
                       optimizer=optimizer, learning_rate=learning_rate, dropout=dropout, dilation_rate=dilation_rate)
 #train u-net
 unet, history = train_model(unet, training_directory, validation_directory, rgb_encoding,
-                   epochs, steps_per_epoch, validation_steps, batch_size = batch_size)
+                   epochs, steps_per_epoch, validation_steps, batch_size = batch_size, schedule=schedule)
     
     
 
@@ -131,7 +136,7 @@ plt.plot(history.history['val_loss'])
 plt.title('Model loss')
 plt.ylabel('Loss')
 plt.xlabel('Epoch')
-plt.legend(['Train', 'Test'], loc='upper left')
+plt.legend(['Train', 'Validation'], loc='upper left')
 plt.show()
 
 #--------------------------- Single Image Testing ---------------------------#
@@ -148,7 +153,7 @@ plt.imshow(pred_img)
 
 #------------------------------- Save info -------------------------------#
 import pickle
-with open('Training_1v2_History', 'wb') as f:
+with open('Training_7_History', 'wb') as f:
         pickle.dump(history.history, f)
 
-unet.save("Training_1v2_Model.h5")
+unet.save("Training_7_Model.h5")

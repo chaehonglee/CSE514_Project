@@ -44,9 +44,9 @@ def train_model(model, training_directory, validation_directory, rgb_encoding,
     
     #--------------------- Learning Rate Scheduler ---------------------#
     
-    if (schedule.lower() == "step"):
+    if (schedule == "step"):
         learning_rate_schedule = LearningRateScheduler(step_decay_schedule)
-    if (schedule.lower() == "polyomial"):
+    if (schedule == "polynomial"):
         learning_rate_schedule = LearningRateScheduler(polynomiaL_decay_schedule)
     
     #--------------------- Begin Training ---------------------#
@@ -99,27 +99,32 @@ def create_augmentation_generator(image_generator, mask_generator, directory,
         yield image, np.asarray(encode_image_batch(mask, rgb_encoding))
         
         
+#polynomial decay scheduler in the form LR = initial_lrate*(1 + decay_coeff*epoch)^-order
+def polynomiaL_decay_schedule(epoch):
+    #initial learning rate
+    initial_lrate = 1e-2
+    #coefficient of decay
+    decay_coeff = 0.3
+    #polynomial order
+    order = 2.0
+    
+    #the overall learning rate
+    lrate = initial_lrate*(1.0 + decay_coeff*epoch)**-order
+    print(lrate)
+    return lrate
+
 #Step-wise learning rate scheduler
 #Copied from https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/
 def step_decay_schedule(epoch):
     #initial Learning Rate
-	initial_lrate = 0.1
+    initial_lrate = 1e-2
     #Magnitude of drop (10x reduction)
-	drop = 0.5
+    drop = 0.6
     #How many epochs until a drop occurs
-	epochs_drop = 3.0
+    epochs_drop = 3.0
     #Overall Learning Rate
-	lrate = initial_lrate * math.pow(drop, math.floor((1+epoch)/epochs_drop))
-	return lrate
+    lrate = initial_lrate * math.pow(drop, math.floor((1+epoch)/epochs_drop))
+    print(lrate)
+    return lrate
 
-#polynomial decay scheduler in the form LR = initial_lrate*(1 + decay_coeff*epoch)^-order
-def polynomiaL_decay_schedule(epoch):
-    #initial learning rate
-    initial_lrate = 0.1
-    #coefficient of decay
-    decay_coeff = 1
-    #polynomial order
-    order = 2
-    
-    #return the overall learning rate
-    return initial_lrate*(1 + decay_coeff*epoch)^-order
+
