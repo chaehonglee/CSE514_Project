@@ -2,6 +2,8 @@
 The entrance to the program
 """
 from U_Net import generate_u_net
+from U_Net_v2 import generate_u_net_v2
+from U_Net_v3 import generate_u_net_v3
 from train_model import train_model
 from arrange_data import arrange_data
 import numpy as np
@@ -33,8 +35,7 @@ validation_steps = 100
 batch_size = 2
 dropout = 0.25
 dilation_rate = 2
-schedule='step'
-
+schedule=None
 #define colomaps for pascal voc 2012
 #colormaps taken from Pascal Voc 2012 development kit code from http://host.robots.ox.ac.uk/pascal/VOC/voc2012/
 #onehot encoding referenced from https://github.com/advaitsave/Multiclass-Semantic-Segmentation-CamVid/blob/master/Multiclass%20Semantic%20Segmentation%20using%20U-Net.ipynb
@@ -110,8 +111,14 @@ if needs_dataset_generation:
 
 
 #create a U_Net model
-unet = generate_u_net(num_classes=num_classes, input_size=input_size,
+# =============================================================================
+# unet = generate_u_net(num_classes=num_classes, input_size=input_size,
+#                       optimizer=optimizer, learning_rate=learning_rate, dropout=dropout, dilation_rate=dilation_rate)
+# =============================================================================
+
+unet = generate_u_net_v3(num_classes=num_classes, input_size=input_size,
                       optimizer=optimizer, learning_rate=learning_rate, dropout=dropout, dilation_rate=dilation_rate)
+
 #train u-net
 unet, history = train_model(unet, training_directory, validation_directory, rgb_encoding,
                    epochs, steps_per_epoch, validation_steps, batch_size = batch_size, schedule=schedule)
@@ -153,7 +160,7 @@ plt.imshow(pred_img)
 
 #------------------------------- Save info -------------------------------#
 import pickle
-with open('Training_7_History', 'wb') as f:
+with open('Training_9_History', 'wb') as f:
         pickle.dump(history.history, f)
 
-unet.save("Training_7_Model.h5")
+unet.save("Training_9_Model.h5")
