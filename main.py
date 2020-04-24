@@ -4,6 +4,7 @@ The entrance to the program
 from U_Net import generate_u_net
 from U_Net_v2 import generate_u_net_v2
 from U_Net_v3 import generate_u_net_v3
+from U_Net_v4 import generate_u_net_v4
 from train_model import train_model
 from arrange_data import arrange_data
 import numpy as np
@@ -160,7 +161,14 @@ plt.imshow(pred_img)
 
 #------------------------------- Save info -------------------------------#
 import pickle
-with open('Training_9_History', 'wb') as f:
+with open('Training_4_4_History', 'wb') as f:
         pickle.dump(history.history, f)
 
-unet.save("Training_9_Model.h5")
+unet.save("Training_4_4_Model.h5")
+
+#load models with custom loss and accuracy
+# =============================================================================
+# import tensorflow as tf
+# from U_Net import dice_coef, dice_coef_multilabel, iou_coef
+# unet = tf.keras.models.load_model('Training_4_Model.h5', custom_objects={'dice_coef_multilabel':dice_coef_multilabel, 'iou_coef':iou_coef})
+# =============================================================================

@@ -17,7 +17,7 @@ import tensorflow.keras.backend as K
 import numpy as np
 
 
-def generate_u_net(num_classes = 21, input_size = (512, 512, 3),\
+def generate_u_net_v4(num_classes = 21, input_size = (512, 512, 3),\
                    optimizer="adam", learning_rate = 1e-3, dropout=0.25, dilation_rate=2):
     
     #check if a valid optimizer is passed in
