@@ -1,11 +1,14 @@
 """
 Trains a given model on training and testing set directories
+
 Uses https://keras.io/preprocessing/image/ as a documentation guide
-And https://github.com/zhixuhao/unet/blob/master/data.py and 
+
+Uses https://github.com/zhixuhao/unet/blob/master/data.py and 
 https://github.com/advaitsave/Multiclass-Semantic-Segmentation-CamVid/blob/master/Multiclass%20Semantic%20Segmentation%20using%20U-Net.ipynb
 as a guide on how to use the ImageDataGenerator for UNET
 
-using https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/ for learning rate schedulers
+using https://machinelearningmastery.com/using-learning-rate-schedules-deep-learning-models-python-keras/ 
+for examples on how to implement learning rate schedulers
 """
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from one_hot_encoder import encode_image_batch
@@ -16,6 +19,37 @@ from tensorflow.keras.callbacks import LearningRateScheduler
 def train_model(model, training_directory, validation_directory, rgb_encoding,
                 epochs=10, steps_per_epoch=1000, validation_steps=100, batch_size = 16,
                 schedule = None):
+    """
+    trains a specified model given data directories, encodings and parameters
+
+    Parameters
+    ----------
+    model : Keras Model
+        The Model to train.
+    training_directory : string
+        File path to the training directory containing training masks and images.
+    validation_directory : string
+        File path to the validation directory containing training masks and images..
+    rgb_encoding : Dictionary
+        Dictionary mapping integers to RGB values for one-hot-encoding.
+    epochs : int, optional
+        Number of training epochs. The default is 10.
+    steps_per_epoch : int, optional
+        Number of training steps per epoch. The default is 1000.
+    validation_steps : int, optional
+        Number of validation steps per epoch.. The default is 100.
+    batch_size : int, optional
+        Training batch size. The default is 16.
+    schedule : string, optional
+        Name of the learning rate scheduler. The default is None.
+
+    Returns
+    -------
+    model : Keras Model
+        The trained model.
+    history : Keras History
+        The training history of the model for this training run.
+    """
     
     #get the inputshape of the model
     input_shape = model.layers[0].input_shape[0][1:-1]
@@ -75,6 +109,28 @@ def train_model(model, training_directory, validation_directory, rgb_encoding,
 #referencing https://github.com/advaitsave/Multiclass-Semantic-Segmentation-CamVid/blob/master/Multiclass%20Semantic%20Segmentation%20using%20U-Net.ipynb
 def create_augmentation_generator(image_generator, mask_generator, directory, 
                                   input_shape, batch_size, rgb_encoding):
+    """
+    Creates augmentation generators with one-hot-encoded masks
+
+    Parameters
+    ----------
+    image_generator : Keras Image Generator
+        Keras Image Generator for Images.
+    mask_generator : Keras Image Generator
+        Keras Image Generator for masks.
+    directory : string
+        Directory to images and masks
+    input_shape : tuple
+        Shape of the input.
+    batch_size : int
+        Batch size for training.
+    rgb_encoding : Dictionary
+        Dictionary mapping integers to RGB values for one-hot-encoding.
+
+    Yields
+    ------
+    Tuple of image and one-hot-encoded mask generators
+    """
     #data generators
     image_datagen = image_generator.flow_from_directory(
         directory,

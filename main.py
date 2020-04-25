@@ -112,13 +112,14 @@ if needs_dataset_generation:
 
 
 #create a U_Net model
+
+unet = generate_u_net(num_classes=num_classes, input_size=input_size,
+                      optimizer=optimizer, learning_rate=learning_rate, dropout=dropout, dilation_rate=dilation_rate)
+
 # =============================================================================
-# unet = generate_u_net(num_classes=num_classes, input_size=input_size,
+# unet = generate_u_net_v4(num_classes=num_classes, input_size=input_size,
 #                       optimizer=optimizer, learning_rate=learning_rate, dropout=dropout, dilation_rate=dilation_rate)
 # =============================================================================
-
-unet = generate_u_net_v3(num_classes=num_classes, input_size=input_size,
-                      optimizer=optimizer, learning_rate=learning_rate, dropout=dropout, dilation_rate=dilation_rate)
 
 #train u-net
 unet, history = train_model(unet, training_directory, validation_directory, rgb_encoding,
@@ -153,7 +154,7 @@ from one_hot_encoder import decode_encoded_batch
 import cv2
 import matplotlib.pyplot as plt
 import matplotlib.image as img
-test_img = img.imread(validation_directory+'\\images\\2009_005120.jpg')/255.
+test_img = img.imread(validation_directory+'\\images\\2007_000250.jpg')/255.
 test_img = np.reshape(cv2.resize(test_img, input_size[:2]), [1] + list(input_size))
 prediction = unet.predict(test_img)
 pred_img = decode_encoded_batch(prediction, rgb_encoding)[0]
@@ -170,5 +171,5 @@ unet.save("Training_4_4_Model.h5")
 # =============================================================================
 # import tensorflow as tf
 # from U_Net import dice_coef, dice_coef_multilabel, iou_coef
-# unet = tf.keras.models.load_model('Training_4_Model.h5', custom_objects={'dice_coef_multilabel':dice_coef_multilabel, 'iou_coef':iou_coef})
+# unet = tf.keras.models.load_model('Training_4_4_Model.h5', custom_objects={'dice_coef_multilabel':dice_coef_multilabel, 'iou_coef':iou_coef})
 # =============================================================================

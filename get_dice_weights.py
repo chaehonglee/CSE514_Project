@@ -6,7 +6,23 @@ import matplotlib.image as img
 
 def get_dice_weights(mask_dir, rgb_encoding, size=(512,512, 21)):
     """
-    Gets the relative weights of each object of the mask
+    Gets the relative weights of each object of the mask, proportional 
+    to the inverse of the object's frequency in the training masks
+
+    Parameters
+    ----------
+    mask_dir : string
+        The string to the directory with the training masks.
+    rgb_encoding : dictionary
+        the rgb encoding for one-hot-encoding mask colors.
+    size : tuple, optional
+        The size of the one-hot-encoded masks. The default is (512,512, 21).
+
+    Returns
+    -------
+    array
+        The dice weights.
+
     """
 
     
@@ -22,8 +38,6 @@ def get_dice_weights(mask_dir, rgb_encoding, size=(512,512, 21)):
         
         #read and resize the mask
         current_mask = cv2.resize(img.imread(mask_dir+'\\'+mask), size[:2])
-        
-        
         
         #add its values to the encoded sum
         encoded_sum += encode_image(current_mask, rgb_encoding)

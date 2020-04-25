@@ -1,5 +1,5 @@
 """
-impoHelper functions to encode and decode labelled images
+Helper functions to encode and decode labelled images
 """
 import numpy as np
 
@@ -75,7 +75,6 @@ def decode_encoded_image(encoded_image, rgb_encoding):
     Parameters:
         encoded_image : (X,Y,Classes) sized encoded numpy array
         rgb_encoding : dictionary mapping integers to RGB values
-        background_encode : boolean for if the background needs to be encoded as (0,0,0)
     Returns:
         (X,Y,3) sized numpy array
     """  

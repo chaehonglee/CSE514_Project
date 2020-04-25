@@ -1,12 +1,18 @@
 """
-Creates the U-Net Architecture, based off of Ronnenberger et. al 2015
+Creates the U-Net Architecture, based off of Ronneberger et. al 2015
+Reduces the amount of filters per convolutional block
+
 Uses https://keras.io/getting-started/functional-api-guide/ and 
 https://keras.io/layers/convolutional/ as documentation guides
 
 Using https://github.com/advaitsave/Multiclass-Semantic-Segmentation-CamVid/blob/master/Multiclass%20Semantic%20Segmentation%20using%20U-Net.ipynb
-and https://github.com/zhixuhao/unet/blob/master/model.py as references for architecture for dropout and batchnormalization
+and https://github.com/zhixuhao/unet/blob/master/model.py as references for how to use dropout and batchnormalization in the architecture
 
 Using https://www.kaggle.com/c/carvana-image-masking-challenge/discussion/40199 and https://towardsdatascience.com/review-dilated-convolution-semantic-segmentation-9d5a5bd768f5 for idea of dilation
+
+Using Github User Gattia from https://github.com/keras-team/keras/issues/9395 for base code for Multilabel Weighted Dice Loss Implementation
+
+Using https://towardsdatascience.com/metrics-to-evaluate-your-semantic-segmentation-model-6bcb99639aa2 for IOU metric implementation
 """
 
 from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D,\
@@ -19,6 +25,30 @@ import numpy as np
 
 def generate_u_net_v3(num_classes = 21, input_size = (512, 512, 3),\
                    optimizer="adam", learning_rate = 1e-3, dropout=0.25, dilation_rate=2):
+    """
+    Creates a U-Net model
+
+    Parameters
+    ----------
+    num_classes : int, optional
+        Number of segmentation classes. The default is 21.
+    input_size : tuple, optional
+        Size of the input images. The default is (512, 512, 3).
+    optimizer : string, optional
+        Name of the optimizer to use, from adam, sgd and nadam. The default is "adam".
+    learning_rate : float, optional
+        The initial learning rate. The default is 1e-3.
+    dropout : float, optional
+        The dropout probability. The default is 0.25.
+    dilation_rate : int, optional
+        The base for the exponential dilation. The default is 2.
+
+    Returns
+    -------
+    uNet_model : Keras Model
+        The untrained U-Net model.
+
+    """
     
     #check if a valid optimizer is passed in
     assert optimizer.lower() in ["adam", "sgd", "nadam"]
