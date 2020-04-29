@@ -29,9 +29,9 @@ needs_dice_weights = False
 num_classes = 21
 input_size = (512, 512, 3)
 optimizer = "adam"
-learning_rate = 1e-2
+learning_rate = 1e-4
 epochs = 30
-steps_per_epoch = 1250
+steps_per_epoch = 900
 validation_steps = 100
 batch_size = 2
 dropout = 0.25
@@ -149,7 +149,6 @@ plt.legend(['Train', 'Validation'], loc='upper left')
 plt.show()
 
 #--------------------------- Single Image Testing ---------------------------#
-from predict_image import predict_image
 from one_hot_encoder import decode_encoded_batch
 import cv2
 import matplotlib.pyplot as plt
